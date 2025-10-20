@@ -12,7 +12,10 @@
     if ( isset($_POST['email']) ){
 
         $email = $_POST['email'];
-        $user = $db -> query("SELECT * FROM users WHERE email = '{$email}'");  
+        $stmt = $db->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->execute();
+        $user = $stmt->fetchAll();
 
         $status="success";
     }
