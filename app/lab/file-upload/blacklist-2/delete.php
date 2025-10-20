@@ -1,14 +1,13 @@
 <?php
+if(isset($_GET['file'])){
+    // Use basename() to strip directory traversal characters from the input.
+    $file = basename($_GET['file']);
+    $filepath = "../../unrestricted/uploads/" . $file;
 
-$uploads = glob('uploads/*');
-
-foreach($uploads as $upload){
-   if( is_file($upload) ){
-      unlink($upload);
-   }
+    // Ensure the file exists in the intended directory before deleting.
+    if (file_exists($filepath)) {
+        unlink($filepath);
+    }
+    header("Location: index.php");
 }
-
-header("Location: index.php");
-exit;
-
 ?>
