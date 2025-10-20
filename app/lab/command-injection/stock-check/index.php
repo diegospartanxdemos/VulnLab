@@ -65,14 +65,20 @@ $strings = tr();
 			<div class="col-md-5" style="margin-left: 150px;">
 				<?php
 				
-				if (isset($_GET['product_id'])) {
-					$cmd = $_GET["product_id"];
+if (isset($_GET['product_id'])) {
+    $productId = $_GET['product_id'];
 
-					$result = shell_exec("perl stok.pl $cmd");
+    // Ensure the product ID is an integer to prevent injection
+    if (filter_var($productId, FILTER_VALIDATE_INT)) {
+        // Use escapeshellarg to treat the entire argument as a single, safe string
+        $escapedProductId = escapeshellarg($productId);
+        $result = shell_exec("perl stok.pl " . $escapedProductId);
 
-					
-					echo '<div class="alert alert-primary" role="alert" style=" width:1000px;" > <strong>  <p style="text-align:center;">' . $strings['result'] . '' . $result . ' ' . $strings['pieces'] . '</p></strong></div>';
-				}
+        echo '<div class="alert alert-primary" role="alert" style=" width:1000px;" > <strong>  <p style="text-align:center;">' . $strings['result'] . '' . $result . ' ' . $strings['pieces'] . '</p></strong></div>';
+    } else {
+        echo '<div class="alert alert-danger" role="alert" style=" width:1000px;" > <strong><p style="text-align:center;">Invalid product ID.</p></strong></div>';
+    }
+}
 					
 				?>
 			</div>
