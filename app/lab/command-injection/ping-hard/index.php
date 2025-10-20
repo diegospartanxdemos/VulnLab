@@ -31,31 +31,25 @@ $strings = tr();
 
 			<?php
 			if (isset($_POST["ip"])) {
-				$input = $_POST["ip"];
-				$blacklists = array(" ", "&", ";", "@", "%", "^", "'", "<", ">", ",", "\\", "/", "ls", "cat", "less", "tail", "more", "whoami", "pwd", "echo", "ps");
-				$arraySize = sizeof($blacklists);
-				$status = 0;
+					$input = $_POST["ip"];
+					// Use escapeshellarg() to ensure the input is treated as a single, safe argument.
+					$sanitized_input = escapeshellarg($input);
 
-				foreach ($blacklists as $blacklist) {
-					if (!strstr($input, $blacklist)) {
-						//$input = str_replace($blacklist,"", $input);
-						$status++;
-					}
-				}
-				if ($arraySize == $status) {
-					exec("ping -c5 $input", $out);
-					if (!empty($out)) {
-						echo '<div class="mt-5 alert alert-primary" role="alert" style=" width:500px;" > <strong>  <p style="text-align:center;">';
-						foreach ($out as $line) {
-							echo $line;
-							echo "<br>";
+					// It is also best practice to validate the input format.
+					if (filter_var($input, FILTER_VALIDATE_IP)) {
+						exec("ping -c 5 " . $sanitized_input, $out);
+						if (!empty($out)) {
+							echo '<div class="mt-5 alert alert-primary" role="alert" style=" width:500px;" > <strong>  <p style="text-align:center;">';
+							foreach ($out as $line) {
+								echo htmlspecialchars($line, ENT_QUOTES, 'UTF-8');
+								echo "<br>";
+							}
+							echo ' </p></strong></div>';
 						}
-						echo ' </p></strong></div>';
+					} else {
+						echo '<div class="mt-5 alert alert-danger" role="alert" style=" width:500px;" > <strong>  <p style="text-align:center;">ERROR: Invalid IP address format.</p></strong></div>';
 					}
-				} else {
-					echo '<div class="mt-5 alert alert-danger" role="alert" style=" width:500px;" > <strong>  <p style="text-align:center;">ERROR</p></strong></div>';
 				}
-			}
 			?>
 		</div>
 	</div>
