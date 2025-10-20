@@ -37,7 +37,9 @@ $strings = tr();
 					$input = $_POST["ip"];
 					echo "<br /><br />";
 
-					exec("ping -c5 $input", $out);
+                    // Sanitize the user input to prevent command injection
+                    $escaped_input = escapeshellarg($input);
+					exec("ping -c5 " . $escaped_input, $out);
 					if (!empty($out)) {
 
 						echo '<div class="mt-5 alert alert-primary" role="alert" style=" width:500px;" > <strong>  <p style="text-align:center;">';
